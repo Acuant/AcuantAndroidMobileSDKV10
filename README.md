@@ -1,58 +1,108 @@
-# AndroidMobileSDKV2
+# Acuant Android Mobile SDK v2
 
-**Step - 0 : Setup:**
 
-In the App manifest file, specify the permissions 
+**Last updated – June 27, 2018**
+
+Copyright <sup>©</sup> 2003-2018 Acuant Inc. All rights reserved.
+
+This document contains proprietary and confidential 
+information and creative works owned by Acuant and its respective
+licensors, if any. Any use, copying, publication, distribution, display,
+modification, or transmission of such technology in whole or in part in
+any form or by any means without the prior express written permission of
+Acuant is strictly prohibited. Except where expressly provided by Acuant
+in writing, possession of this information shall not be
+construed to confer any license or rights under any Acuant intellectual
+property rights, whether by estoppel, implication, or otherwise.
+
+AssureID and *i-D*entify are trademarks of Acuant Inc. Other Acuant product or service names or logos referenced this document are either trademarks or registered trademarks of Acuant.
+
+All 3M trademarks are trademarks of Gemalto Inc.
+
+Windows<sup>®</sup> is a registered trademark of Microsoft Corporation.
+
+Certain product, service, or company designations for companies other
+than Acuant may be mentioned in this document for identification
+purposes only. Such designations are often claimed as trademarks or
+service marks. In all instances where Acuant is aware of a claim, the
+designation appears in initial capital or all capital letters. However,
+you should contact the appropriate companies for more complete
+information regarding such designations and their registration status.
+
+**June 2018**
+
+<p>Acuant Inc.</p>
+<p>6080 Center Drive, Suite 850</p>
+<p>Los Angeles, CA 90045</p>
+<p>==================</p>
+
+
+# Introduction
+
+<p>Acuant Web Services supports data extraction from driver’s licenses, state IDs, other government issued IDs, custom IDs, driver’s licenses, barcodes, and passports. It also supports document authentication and facial recognition to verify and authenticate the identity.</p>
+
+<p>This document contains a detailed description of all functions that developers need to integrate with the Acuant Android Mobile SDK.</p>
+
+
+
+
+## Setup ##
+
+
+
+1. **Open the App manifest file.**
+
+1. **Specify the permissions in the App manifest file:** 
 	
-	<uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.NFC" />
-    
-Add the following meta information in the manifest file
+		<uses-permission android:name="android.permission.INTERNET" />
+		<uses-permission android:name="android.permission.CAMERA" />
+		<uses-permission android:name="android.permission.NFC" />
 
-	<meta-data
+1. **Add the following meta information in the manifest file:**
+
+		<meta-data
         android:name="com.google.android.gms.vision.DEPENDENCIES"
         android:value="barcode,face" />
     
-SDK uses Android Vision library. Please make sure you put the following line in the dependencies
+1. **Include the following line in the dependencies (The Android Mobile SDK uses the Android Vision library):** 
 
-	implementation 'com.google.android.gms:play-services-vision:11.0.4+'
+		implementation 'com.google.android.gms:play-services-vision:11.0.4+'
 	
-The following dependencies must be added for e-Chip verification
+1. **Add the following dependencies for e-Chip verification:**
 
-	implementation ('org.jmrtd:jmrtd:0.5.6')
-    implementation ('org.ejbca.cvc:cert-cvc:1.4.3')
-    implementation ('com.madgag.spongycastle:prov:1.54.0.0')
-    implementation ('net.sf.scuba:scuba-sc-android:0.0.9')
+		implementation ('org.jmrtd:jmrtd:0.5.6')
+		implementation ('org.ejbca.cvc:cert-cvc:1.4.3')
+		implementation ('com.madgag.spongycastle:prov:1.54.0.0')
+		implementation ('net.sf.scuba:scuba-sc-android:0.0.9')
+
+1. **Add the Acuant SDK dependency:**
+
+		implementation project(':acuantsdk')
+
+1. **Keep the following ProGuard rules while obfuscating:**
+
+		-keep class * {
+			native <methods>;
+		}  
+	
+		-keep class org.ejbca.** { *; }
+		-keepclassmembers class org.ejbca.** { *; }
+		-keep class net.sf.scuba.** { *; }
+		-keepclassmembers class net.sf.scuba.** { *; }
+		-keep class org.jmrtd.** { *; }
+		-keepclassmembers class org.jmrtd.** { *; } 
+	
+**Note:**  See the Sample App to see how to set up the permissions and dependencies correctly.    
     
-Add the Acuant SDK dependency
+## Initializing the SDK ##
 
-	implementation project(':acuantsdk')
-         
-Keep the following ProGaurd rules while obfuscating
-
-	-keep class * {
-    native <methods>;
-	}  
-	
-	-keep class org.ejbca.** { *; }
-	-keepclassmembers class org.ejbca.** { *; }
-	-keep class net.sf.scuba.** { *; }
-	-keepclassmembers class net.sf.scuba.** { *; }
-	-keep class org.jmrtd.** { *; }
-	-keepclassmembers class org.jmrtd.** { *; } 
-	
-Please refer to the sample Sample App to check how to set up the permissions and dependencies correctly    
-    
-**Step - 1 : Initialize SDK :**
-
--	Set the endpoints
+1.	**Set the endpoints:**
 
 		val endPoints = Endpoints()
 		endPoints!!.frmEndpoint = "https://frm.acuant.net/api/v1"
 		endPoints!!.idEndpoint = "https://services.assureid.net"
 
--	Set the credentials
+1. **Set the credentials:**
 
         val credential = Credential()
         credential!!.username = "username@acuantcorp.com"
@@ -60,7 +110,7 @@ Please refer to the sample Sample App to check how to set up the permissions and
         credential!!.subscription = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
         credential!!.endpoints = endPoints
 
--	Init Controller (e,g SDK)
+1. **Initialize the Controller:**
 
         Controller.init(credential, object : InitializationListener {
             override fun initializationFinished(error: Error?) {
@@ -72,13 +122,11 @@ Please refer to the sample Sample App to check how to set up the permissions and
             }
         });
 		
-**Step - 2 : Capturing Image :**
+## Image capture ##
 
-Image capture is illustrated in the Sample App in the package "com.acuant.sampleapp.documentcapturecamera" . 
+Image capture is illustrated in the Sample App in the "**com.acuant.sampleapp.documentcapturecamera**" package. See the *createCameraSource* of *DocumentCaptureActivity* function that illustrates how to capture a document.
 
-In the function *createCameraSource* of *DocumentCaptureActivity* , it is illustrated how to capture a document.
-
-The illustrated capture code is only helpful if there is a requirement to detect PDF417 2D barcode in the image.
+**Note:**  The illustrated capture code is only helpful if there is a requirement to detect PDF417 2D barcode in the image.
 
 	// To create a document detector
 	   documentDetector = controller.createDocumentDetector(context,this);
@@ -91,11 +139,12 @@ The illustrated capture code is only helpful if there is a requirement to detect
     // The following method will start detecting barcode on the document with time in seconds.
     documentBarcodeDetector.startDetectingPdf417(2);
 		 
-**Step - 3 : Cropping Image :**
+## Image cropping ##
 
-Once image is captured, its sent to the cropping library for cropping.
+After an image is captured, it is sent to the cropping library for cropping.
 
--	Setting card Attributes
+1. **Set card attributes:**
+
 	If the card type is known then set it to the correct type (e,g, CardType.ID1, CardType.ID2, or CardType.ID3) . If card type is ID2 then card width in inches needs to be set correctly. If the card type is either ID1 or ID3 then AUTO can be set to detect the card type by the cropping function.
 
 		val cardAttributes = CardAtributes()
@@ -103,9 +152,10 @@ Once image is captured, its sent to the cropping library for cropping.
              //cardAttributes.cardType = CardType.ID2
              //cardAttributes.cardWidth = 4.13f
              cardAttributes.cardType = CardType.AUTO
-       }
+		}
        
-- Setting cropping options
+       
+1. **Set the cropping options:**
 
 	Set the CardAttributes, whether the captured images is an Health Insurance card or not and whether Image metrics (Sharpness and Glare) are required or not.
 	
@@ -114,16 +164,20 @@ Once image is captured, its sent to the cropping library for cropping.
 		options.cardAtributes = cardAttributes
 		options.isHealthCard = isHealthInsuranceCard
 		
--	Setting the Image to be cropped
+
+1. **Set the Image to be cropped:**
 
 		val data = CroppingData()
 		data.image = image
 
-- Crop
+
+1. **Crop the image:**
 
  		val acuantImage : Image = controller.crop(options,data);
  		
-- Image class
+
+
+1. **Image class:**
 
 		public class Image {
     			public Bitmap image;
@@ -136,25 +190,25 @@ Once image is captured, its sent to the cropping library for cropping.
     			public Error error;
 		}
 
-**Step - 4 : Facial Recognition :**
+## Facial recognition ##
 
-- Create a live face detector and camera
+The following sample describes how to create a live face detector and camera source.
 
-As demonstrated in the Sample App create a live face detector and a CameraSource as below :
+
+1. **Create a live face detector and a CameraSource:**
 
 		// The first parameter is the activity and the second one is the LiveFaceListener
 		val liveFaceDetector = controller.createLiveFaceDetector(context, this)
 		
-		// Pass the detector to the CameraSource
-       val mCameraSource = CameraSource.Builder(context, liveFaceDetector)
+		// Pass the detector to the CameraSourc
+		val mCameraSource = CameraSource.Builder(context, liveFaceDetector)
                 .setFacing(CameraSource.CAMERA_FACING_FRONT)
                 .setRequestedPreviewSize(320, 240)
                 .setRequestedFps(60.0f)
                 .setAutoFocusEnabled(true)
                 .build()
    	 	
-		
-- LiveFaceListener Interface
+1. **LiveFaceListener Interface**
 
 	This interface has the following method
 	
@@ -169,12 +223,12 @@ As demonstrated in the Sample App create a live face detector and a CameraSource
     	}	
 		
 		
-**Step 5 : Process captured images (Web Service call) :**
+## Process captured images##
 
-***Processing ID***
+Use a Web Service call to process the captured images. 
 
 
--	Set the Processing Options
+1. **Set the processing options:**
         
         val cardAttributes = CardAtributes()
         // If it is ID2 type then set the cardWidth correctly
@@ -185,14 +239,16 @@ As demonstrated in the Sample App create a live face detector and a CameraSource
         val idProcessingOptions = IdOptions()
         idProcessingOptions.cardAttributes = cardAttributes
         
-- Set the Processing Data
+
+
+1. **Set the processing data:**
         
         val idProcessingData = IdData()
         imageProcessingData.frontImage = backImage // Bitmap
         imageProcessingData.backImage = frontImage // Bitmap
         imageProcessingData.barcodeString = capturedBarcodeString // String
         
-- 	Process ID
+1. **Process the ID**
 
         controller.processId(idProcessingData,idProcessingOptions,object : ImageProcessingListener{
             override fun imageProcessingFinished(result: ImageProcessingResult?) {
@@ -202,15 +258,19 @@ As demonstrated in the Sample App create a live face detector and a CameraSource
         })
         
             
-***Processing Facial Match***
+## Process a Facial Match ##
 
-- Set Facial Data
+
+
+1. **Set Facial Data:**
 
 		val facialMatchData = FacialMatchData()
 		facialMatchData.faceImageOne = capturedFaceImage
 		facialMatchData.faceImageTwo = capturedSelfieImage
                     
-- Process Facial Match
+
+
+1. **Process Facial Match:**
 
  			controller.processFacialMatch(facialMatchData,object : FacialMatchListener{
  				override fun facialMatchFinished(result: FacialMatchResult?) {
@@ -219,21 +279,21 @@ As demonstrated in the Sample App create a live face detector and a CameraSource
             })
 
 
-**Step 6 : E-Passport chip reading :**
+## Read the e-Passport chip ##
 
--	Initialize the Android NFC Adapter:
+
+1. **Initialize the Android NFC Adapter:**
 
 		NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 		
--	Ensure that the permission is provided in runtime for API level 23 and above. 
+1. **Ensure that the permission is provided in runtime for API level 23 and above.** 
 
--	The following SDK API can be used to listen to NFC tags available in an e-Passport
+
+1. **Use the SDK API to listen to NFC tags available in an e-Passport:**
 		
 		controller.listenNFC(activity, nfcAdapter, listener)
 		
-
-
-- If an NFC Tag is successfully discovered, then the control will return to the method of the Activity that was previously overridden:
+1. **If an NFC Tag is discovered, then the control will return to the method of the Activity that was previously overridden:**
 
 		@Override
     	protected void onNewIntent(Intent intent)
@@ -242,12 +302,9 @@ As demonstrated in the Sample App create a live face detector and a CameraSource
         	
         	// Read the information from the tag as below
         	controller.readNFCTag(intent, docNumber, dateOfBirth, dateOfExpiry)
-       }
-        
-
--	Set the Listener to which the control will come after a chip is read successfully or an error occurs.
-
-
+		}
+       
+1. **Implement the Listener methods for success or failure:**
  		
  		override fun tagReadSucceeded(cardDetails: NFCData?, image: Bitmap?, sign_image: Bitmap?) {
  			// Handle Response
