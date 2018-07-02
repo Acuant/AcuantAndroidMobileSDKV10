@@ -71,8 +71,8 @@ class MainActivity : AppCompatActivity() {
         endPoints!!.idEndpoint = "https://services.assureid.net"
 
         credential = Credential()
-        credential!!.username = "xxxxxxx@acuantcorp.com"
-        credential!!.password = "xxxxxxxxxxxxxxx"
+        credential!!.username = "xxxxxxxx@acuantcorp.com"
+        credential!!.password = "xxxxxxxxxxx"
         credential!!.subscription = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         credential!!.endpoints = endPoints
 
@@ -185,6 +185,8 @@ class MainActivity : AppCompatActivity() {
                                 dialog.dismiss()
                             }
                             alert.show()
+                        }else{
+                            processImages(CardType.ID3)
                         }
                     }else if(CapturedImage.acuantImage!!.detectedCardType == CardType.ID2){
                         if(AppInstance.instance.getController()!!.isFacialAllowed()) {
@@ -222,6 +224,9 @@ class MainActivity : AppCompatActivity() {
                                 processImages(CardType.ID1)
                                 showFrontCamera()
                             }
+                            alert.show()
+                        }else{
+                            processImages(CardType.ID1)
                         }
                     }else{
                         alert.setMessage("Process captured Card?")
@@ -230,10 +235,6 @@ class MainActivity : AppCompatActivity() {
                             processHealthCard()
                         }
                     }
-                    alert.setNegativeButton("CANCEL") { dialog, whichButton ->
-                        dialog.dismiss()
-                    }
-                    alert.show()
                 }
             } else {
                 showDocumentCaptureCamera()
