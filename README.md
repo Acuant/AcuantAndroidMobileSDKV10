@@ -1,4 +1,4 @@
-# Acuant Android Mobile SDK v2
+# Acuant Android Mobile SDK v10
 
 
 **Last updated – June 27, 2018**
