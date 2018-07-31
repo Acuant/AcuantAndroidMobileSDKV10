@@ -71,9 +71,9 @@ class MainActivity : AppCompatActivity() {
         endPoints!!.idEndpoint = "https://services.assureid.net"
 
         credential = Credential()
-        credential!!.username = "xxxxxxxx@acuantcorp.com"
-        credential!!.password = "xxxxxxxxxxx"
-        credential!!.subscription = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        credential!!.username = "xxxxxxxx@xxxxxxx.com"
+        credential!!.password = "xxxxxxxxxxxxxx"
+        credential!!.subscription = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxxxxxx"
         credential!!.endpoints = endPoints
 
         Controller.init(credential, object : InitializationListener {

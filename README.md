@@ -49,6 +49,7 @@ information regarding such designations and their registration status.
 ## Setup ##
 
 
+**Prerequisites:** API version 21 or higher.
 
 1. **Open the App manifest file.**
 
@@ -56,6 +57,8 @@ information regarding such designations and their registration status.
 	
 		<uses-permission android:name="android.permission.INTERNET" />
 		<uses-permission android:name="android.permission.CAMERA" />
+		
+		// Required if reading e-Chip in the e-Passports
 		<uses-permission android:name="android.permission.NFC" />
 
 1. **Add the following meta information in the manifest file:**
@@ -74,6 +77,8 @@ information regarding such designations and their registration status.
 		implementation ('org.ejbca.cvc:cert-cvc:1.4.3')
 		implementation ('com.madgag.spongycastle:prov:1.54.0.0')
 		implementation ('net.sf.scuba:scuba-sc-android:0.0.9')
+		
+		//Note : Required for e-Chip reading in e-Passports
 
 1. **Add the Acuant SDK dependency:**
 
@@ -137,7 +142,7 @@ Image capture is illustrated in the Sample App in the "**com.acuant.sampleapp.do
                 
                 
     // The following method will start detecting barcode on the document with time in seconds.
-    documentBarcodeDetector.startDetectingPdf417(2);
+    documentDetector.startDetectingPdf417(2);
 		 
 ## Image cropping ##
 
@@ -153,7 +158,8 @@ After an image is captured, it is sent to the cropping library for cropping.
              //cardAttributes.cardWidth = 4.13f
              cardAttributes.cardType = CardType.AUTO
 		}
-       
+		
+	*Note:*	[https://en.wikipedia.org/wiki/ISO/IEC_7810](https://en.wikipedia.org/wiki/ISO/IEC_7810)
        
 1. **Set the cropping options:**
 
@@ -185,10 +191,12 @@ After an image is captured, it is sent to the cropping library for cropping.
     			public boolean hasImageMetrics;
     			public boolean isSharp;
     			public boolean hasGlare;
-    			public float sharpnessGrade;
-    			public float glareGrade;
+    			public int sharpnessGrade;
+    			public int glareGrade;
     			public Error error;
 		}
+		
+	*Note:*	A sharpness grade of 50 and above is defined as a sharp image. A glare grade of 50 or higher indicates that there is no glare present in the image.
 
 ## Facial recognition ##
 
@@ -239,7 +247,9 @@ Use a Web Service call to process the captured images.
         val idProcessingOptions = IdOptions()
         idProcessingOptions.cardAttributes = cardAttributes
         
+*Note:* By default, the processing mode is set to the mode enabled in the subscription. However, if a user only requires data capture, then they can limit the processing mode by setting the following option:
 
+		imageProcessingOptions.processingMode = ProcessingMode.DataCapture
 
 1. **Set the processing data:**
         
