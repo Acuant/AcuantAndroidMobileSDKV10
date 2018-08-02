@@ -1,7 +1,7 @@
-# Acuant Android Mobile SDK v10
+# Acuant Android Mobile SDK v2
 
 
-**Last updated – June 27, 2018**
+**Last updated – August 2, 2018**
 
 Copyright <sup>©</sup> 2003-2018 Acuant Inc. All rights reserved.
 
@@ -29,7 +29,7 @@ designation appears in initial capital or all capital letters. However,
 you should contact the appropriate companies for more complete
 information regarding such designations and their registration status.
 
-**June 2018**
+**August 2018**
 
 <p>Acuant Inc.</p>
 <p>6080 Center Drive, Suite 850</p>
@@ -67,9 +67,10 @@ information regarding such designations and their registration status.
         android:name="com.google.android.gms.vision.DEPENDENCIES"
         android:value="barcode,face" />
     
-1. **Include the following line in the dependencies (The Android Mobile SDK uses the Android Vision library):** 
+1. **Include the following line in the dependencies:** 
 
 		implementation 'com.google.android.gms:play-services-vision:11.0.4+'
+**Note**   The Android Mobile SDK uses the Android Vision library.
 	
 1. **Add the following dependencies for e-Chip verification:**
 
@@ -97,7 +98,7 @@ information regarding such designations and their registration status.
 		-keep class org.jmrtd.** { *; }
 		-keepclassmembers class org.jmrtd.** { *; } 
 	
-**Note:**  See the Sample App to see how to set up the permissions and dependencies correctly.    
+**Note:**  See the sample application for information about how to correctly set up the permissions and dependencies.    
     
 ## Initializing the SDK ##
 
@@ -120,7 +121,7 @@ information regarding such designations and their registration status.
         Controller.init(credential, object : InitializationListener {
             override fun initializationFinished(error: Error?) {
                 if (error == null) {
-                    // Sucess
+                    // Success
                 } else {
                     // Handle error here
                 }
@@ -129,20 +130,20 @@ information regarding such designations and their registration status.
 		
 ## Image capture ##
 
-Image capture is illustrated in the Sample App in the "**com.acuant.sampleapp.documentcapturecamera**" package. See the *createCameraSource* of *DocumentCaptureActivity* function that illustrates how to capture a document.
+Image capture is described by the sample application in the "com.acuant.sampleapp.documentcapturecamera" package. See the **createCameraSource** of **DocumentCaptureActivity** function that shows how to capture a document.
 
-**Note:**  The illustrated capture code is only helpful if there is a requirement to detect PDF417 2D barcode in the image.
+**Note:**  The sample capture code is provided if there is a requirement to detect PDF417 2D barcode in the image.
 
 	// To create a document detector
 	   documentDetector = controller.createDocumentDetector(context,this);
-       DocumentCameraSource.Builder builder = new 		DocumentCameraSource.Builder(getApplicationContext(),documentDetector)
-                .setFacing(DocumentCameraSource.CAMERA_FACING_BACK)
-                .setRequestedPreviewSize(1600, 1024)
-                .setRequestedFps(60.0f);
-                
-                
-    // The following method will start detecting barcode on the document with time in seconds.
-    documentDetector.startDetectingPdf417(2);
+       DocumentCameraSource.Builder builder = new
+	   DocumentCameraSource.Builder(getApplicationContext(),documentDetector)
+           .setFacing(DocumentCameraSource.CAMERA_FACING_BACK)
+           .setRequestedPreviewSize(1600, 1024)
+           .setRequestedFps(60.0f);
+                            
+    // The following method will start detecting barcode on the document with time (in seconds):
+    	documentDetector.startDetectingPdf417(2);
 		 
 ## Image cropping ##
 
@@ -150,7 +151,7 @@ After an image is captured, it is sent to the cropping library for cropping.
 
 1. **Set card attributes:**
 
-	If the card type is known then set it to the correct type (e,g, CardType.ID1, CardType.ID2, or CardType.ID3) . If card type is ID2 then card width in inches needs to be set correctly. If the card type is either ID1 or ID3 then AUTO can be set to detect the card type by the cropping function.
+	If the card type is known, then set it to the correct type (for example, CardType.ID1, CardType.ID2, or CardType.ID3). If card type is ID2, then set the card width (in inches). If the card type is either ID1 or ID3, then use the **AUTO**  setting to automatically detect the card type with the cropping function.
 
 		val cardAttributes = CardAtributes()
 		if(!isHealthInsuranceCard) {
@@ -159,11 +160,11 @@ After an image is captured, it is sent to the cropping library for cropping.
              cardAttributes.cardType = CardType.AUTO
 		}
 		
-	*Note:*	[https://en.wikipedia.org/wiki/ISO/IEC_7810](https://en.wikipedia.org/wiki/ISO/IEC_7810)
+	**Note:**  See [https://en.wikipedia.org/wiki/ISO/IEC_7810](https://en.wikipedia.org/wiki/ISO/IEC_7810).
        
 1. **Set the cropping options:**
 
-	Set the CardAttributes, whether the captured images is an Health Insurance card or not and whether Image metrics (Sharpness and Glare) are required or not.
+	Set the **CardAttributes**, regardless of whether the captured image(s) is a Health Insurance card, and whether the Image metrics (Sharpness and Glare) are required.
 	
 		val options = CroppingOptions()
 		options.imageMetricsRequired = imageMetricsRequired
@@ -182,8 +183,7 @@ After an image is captured, it is sent to the cropping library for cropping.
  		val acuantImage : Image = controller.crop(options,data);
  		
 
-
-1. **Image class:**
+1. **Image class structure:**
 
 		public class Image {
     			public Bitmap image;
@@ -196,7 +196,7 @@ After an image is captured, it is sent to the cropping library for cropping.
     			public Error error;
 		}
 		
-	*Note:*	A sharpness grade of 50 and above is defined as a sharp image. A glare grade of 50 or higher indicates that there is no glare present in the image.
+	**Note:**	A sharpness grade of 50 and above is defined as a sharp image. A glare grade of 50 or higher indicates that there is no glare present in the image.
 
 ## Facial recognition ##
 
@@ -208,7 +208,7 @@ The following sample describes how to create a live face detector and camera sou
 		// The first parameter is the activity and the second one is the LiveFaceListener
 		val liveFaceDetector = controller.createLiveFaceDetector(context, this)
 		
-		// Pass the detector to the CameraSourc
+		// Pass the detector to the CameraSource
 		val mCameraSource = CameraSource.Builder(context, liveFaceDetector)
                 .setFacing(CameraSource.CAMERA_FACING_FRONT)
                 .setRequestedPreviewSize(320, 240)
@@ -216,14 +216,14 @@ The following sample describes how to create a live face detector and camera sou
                 .setAutoFocusEnabled(true)
                 .build()
    	 	
-1. **LiveFaceListener Interface**
+1. **LiveFaceListener interface**
 
-	This interface has the following method
+	The **LiveFaceListener** interface includes the following method:
 	
 		override fun liveFaceDetailsCaptured(liveFaceDetails: LiveFaceDetails) {
         if (liveFaceDetails.error == null) {
             if(liveFaceDetails.isLiveFace){
-                // A live face is detected the face image can be accessed as liveFaceDetails.image
+                // A live face is detected and the face image can be accessed as liveFaceDetails.image
             }
         	} else {
         	
@@ -247,7 +247,7 @@ Use a Web Service call to process the captured images.
         val idProcessingOptions = IdOptions()
         idProcessingOptions.cardAttributes = cardAttributes
         
-*Note:* By default, the processing mode is set to the mode enabled in the subscription. However, if a user only requires data capture, then they can limit the processing mode by setting the following option:
+	**Note:** By default, the processing mode is set to the mode enabled in the subscription. However, if a user only requires data capture, then they can limit the processing mode by setting the following option:
 
 		imageProcessingOptions.processingMode = ProcessingMode.DataCapture
 
@@ -258,7 +258,7 @@ Use a Web Service call to process the captured images.
         imageProcessingData.backImage = frontImage // Bitmap
         imageProcessingData.barcodeString = capturedBarcodeString // String
         
-1. **Process the ID**
+1. **Process the ID:**
 
         controller.processId(idProcessingData,idProcessingOptions,object : ImageProcessingListener{
             override fun imageProcessingFinished(result: ImageProcessingResult?) {
@@ -271,8 +271,7 @@ Use a Web Service call to process the captured images.
 ## Process a Facial Match ##
 
 
-
-1. **Set Facial Data:**
+1. **Set the facial data:**
 
 		val facialMatchData = FacialMatchData()
 		facialMatchData.faceImageOne = capturedFaceImage
@@ -280,7 +279,7 @@ Use a Web Service call to process the captured images.
                     
 
 
-1. **Process Facial Match:**
+1. **Process the facial match:**
 
  			controller.processFacialMatch(facialMatchData,object : FacialMatchListener{
  				override fun facialMatchFinished(result: FacialMatchResult?) {
