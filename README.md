@@ -234,7 +234,7 @@ The following sample describes how to create a live face detector and camera sou
     	}	
 		
 		
-## Process captured images##
+## Process captured images ##
 
 Use a Web Service call to process the captured images. 
 
