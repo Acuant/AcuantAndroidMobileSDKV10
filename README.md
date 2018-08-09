@@ -1,7 +1,7 @@
-# Acuant Android Mobile SDK v2
+# Acuant Android Mobile SDK v10
 
 
-**Last updated – August 2, 2018**
+**Last updated – August 9, 2018**
 
 Copyright <sup>©</sup> 2003-2018 Acuant Inc. All rights reserved.
 
@@ -74,7 +74,7 @@ information regarding such designations and their registration status.
 	
 1. **Add the following dependencies for e-Chip verification:**
 
-		implementation ('org.jmrtd:jmrtd:0.5.6')
+		implementation ('org.jmrtd:jmrtd:0.5.13')
 		implementation ('org.ejbca.cvc:cert-cvc:1.4.3')
 		implementation ('com.madgag.spongycastle:prov:1.54.0.0')
 		implementation ('net.sf.scuba:scuba-sc-android:0.0.9')
@@ -107,6 +107,7 @@ information regarding such designations and their registration status.
 		val endPoints = Endpoints()
 		endPoints!!.frmEndpoint = "https://frm.acuant.net/api/v1"
 		endPoints!!.idEndpoint = "https://services.assureid.net"
+		endPoints!!.healthInsuranceEndpoint = "https://medicscan.acuant.net/api/v1"
 
 1. **Set the credentials:**
 
@@ -169,7 +170,9 @@ After an image is captured, it is sent to the cropping library for cropping.
 		val options = CroppingOptions()
 		options.imageMetricsRequired = imageMetricsRequired
 		options.cardAtributes = cardAttributes
-		options.isHealthCard = isHealthInsuranceCard
+		
+		// For Medical Insurance Card set the isHealthCard to true
+		options.isHealthCard = false
 		
 
 1. **Set the Image to be cropped:**
@@ -246,6 +249,10 @@ Use a Web Service call to process the captured images.
         
         val idProcessingOptions = IdOptions()
         idProcessingOptions.cardAttributes = cardAttributes
+        
+        // For Medical Insurance Card set isHealthCard to true. 
+        // By default it is set to false
+        mageProcessingOptions.isHealthCard = false
         
 	**Note:** By default, the processing mode is set to the mode enabled in the subscription. However, if a user only requires data capture, then they can limit the processing mode by setting the following option:
 

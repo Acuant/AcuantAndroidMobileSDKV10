@@ -76,6 +76,8 @@ public final class DocumentCaptureActivity extends AppCompatActivity implements 
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().hide();
         RelativeLayout parent = new RelativeLayout(this);
         parent.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         parent.setKeepScreenOn(true);

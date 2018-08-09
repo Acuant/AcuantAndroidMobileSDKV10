@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         capturedSelfieImage = null
         capturedFaceImage = null
         capturedBarcodeString = null
+        isHealthCard = false
 
     }
 
@@ -67,13 +68,13 @@ class MainActivity : AppCompatActivity() {
 
         val endPoints = Endpoints()
         endPoints!!.frmEndpoint = "https://frm.acuant.net/api/v1"
-        endPoints!!.healthInsuranceEndpoint = "https://cssnwebservices.com"
+        endPoints!!.healthInsuranceEndpoint = "https://medicscan.acuant.net/api/v1"
         endPoints!!.idEndpoint = "https://services.assureid.net"
 
         credential = Credential()
-        credential!!.username = "xxxxxxxx@xxxxxxx.com"
-        credential!!.password = "xxxxxxxxxxxxxx"
-        credential!!.subscription = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxxxxxx"
+        credential!!.username = "xxxxxx@xxxxx.com"
+        credential!!.password = "xxxxxxxx"
+        credential!!.subscription = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         credential!!.endpoints = endPoints
 
         Controller.init(credential, object : InitializationListener {
@@ -83,9 +84,8 @@ class MainActivity : AppCompatActivity() {
                         DialogUtils.dismissDialog(progressDialog)
                     }
                     AppInstance.instance.setController(Controller.getInstance())
-                    if(AppInstance.instance.getController()!!.isHealthInsuranceCardAllowed()){
-                        insruanceButton!!.visibility = View.VISIBLE
-                    }
+                    insruanceButton!!.visibility = View.VISIBLE
+
                 } else {
                     this@MainActivity.runOnUiThread {
                         DialogUtils.dismissDialog(progressDialog)
@@ -185,8 +185,6 @@ class MainActivity : AppCompatActivity() {
                                 dialog.dismiss()
                             }
                             alert.show()
-                        }else{
-                            processImages(CardType.ID3)
                         }
                     }else if(CapturedImage.acuantImage!!.detectedCardType == CardType.ID2){
                         if(AppInstance.instance.getController()!!.isFacialAllowed()) {
@@ -224,9 +222,6 @@ class MainActivity : AppCompatActivity() {
                                 processImages(CardType.ID1)
                                 showFrontCamera()
                             }
-                            alert.show()
-                        }else{
-                            processImages(CardType.ID1)
                         }
                     }else{
                         alert.setMessage("Process captured Card?")
@@ -235,6 +230,10 @@ class MainActivity : AppCompatActivity() {
                             processHealthCard()
                         }
                     }
+                    alert.setNegativeButton("CANCEL") { dialog, whichButton ->
+                        dialog.dismiss()
+                    }
+                    alert.show()
                 }
             } else {
                 showDocumentCaptureCamera()
@@ -250,7 +249,6 @@ class MainActivity : AppCompatActivity() {
     // ID/Passport Clicked
     fun idPassPortClicked(view: View) {
         frontCaptured = false
-        isHealthCard = false
         cleanUpTransaction()
         showDocumentCaptureCamera()
     }
@@ -258,8 +256,8 @@ class MainActivity : AppCompatActivity() {
     // Health Insurance Clicked
     fun healthInsuranceClicked(view: View) {
         frontCaptured = false
-        isHealthCard = true
         cleanUpTransaction()
+        isHealthCard = true
         showDocumentCaptureCamera()
     }
 
@@ -286,12 +284,68 @@ class MainActivity : AppCompatActivity() {
     //process images
     fun processHealthCard(){
 
+        val imageProcessingOptions = IdOptions()
+
+        imageProcessingOptions.isHealthCard = true
+        val imageProcessingData = IdData()
+        if(capturedFrontImage != null) {
+            imageProcessingData.frontImage = (capturedFrontImage!!.image)
+
+        }
+        if(capturedBackImage != null) {
+            imageProcessingData.backImage = (capturedBackImage!!.image)
+
+        }
+
+        if(capturedBarcodeString != null) {
+            imageProcessingData.barcodeString = capturedBarcodeString
+            capturedBarcodeString = null
+        }
+        progressDialog = DialogUtils.showProgessDialog(this, "Processing ...")
+        AppInstance.instance.getController()!!.processId(imageProcessingData,imageProcessingOptions,object : ImageProcessingListener{
+            override fun imageProcessingFinished(result: ImageProcessingResult?) {
+                if(result is ImageProcessingResult) {
+                    this@MainActivity.runOnUiThread {
+                        DialogUtils.dismissDialog(progressDialog)
+                    }
+                    if(result.error!=null || result==null){
+                        this@MainActivity.runOnUiThread {
+                            DialogUtils.dismissDialog(progressDialog)
+                        }
+                        val alert = AlertDialog.Builder(this@MainActivity)
+                        alert.setTitle("Error")
+                        alert.setMessage(result.error.errorDescription)
+                        alert.setPositiveButton("OK") {dialog,whichButton->
+                            dialog.dismiss()
+                        }
+                        alert.show()
+                        return;
+                    }else {
+                        val healthCardResult = result as HealthInsuranceCardResult
+                        val resultStr = CommonUtils.stringFromResult(healthCardResult)
+                        showHealthCardResults(null, null, null, healthCardResult.frontImage, healthCardResult.backImage, null, null, resultStr)
+                        AppInstance.instance.getController()!!.deleteInstance(healthCardResult.instanceID,DeleteType.MedicalCard, object : DeleteListener{
+                            override fun instanceDeleted(success: Boolean) {
+                                if(!success){
+                                    // Handle error
+                                }else{
+                                    Log.d("DELETE","Medical Card Instance Deleted successfully")
+                                }
+                            }
+
+                        })
+                    }
+                }
+            }
+
+        })
+
     }
     fun processImages(cardType: CardType) {
         MainActivity@capturingImageData = true
         val imageProcessingOptions = IdOptions()
         val cardAttributes = CardAtributes()
-
+        
         //cardAttributes.cardType = CardType.ID2
         //cardAttributes.cardWidth = 4.13f
 
@@ -312,13 +366,7 @@ class MainActivity : AppCompatActivity() {
         progressDialog = DialogUtils.showProgessDialog(this, "Processing ...")
         AppInstance.instance.getController()!!.processId(imageProcessingData,imageProcessingOptions,object : ImageProcessingListener{
             override fun imageProcessingFinished(result: ImageProcessingResult?) {
-                if(result is HealthInsuranceCardResult) {
-                    this@MainActivity.runOnUiThread {
-                        DialogUtils.dismissDialog(progressDialog)
-                    }
-                    val resultStr = CommonUtils.stringFromResult(result)
-                    showHealthCardResults(null,null,null,result.reformattedImage,result.reformattedImageTwo,null,null,resultStr)
-                }else if(result is ImageProcessingResult) {
+                if(result is ImageProcessingResult) {
                     if(result.error!=null || result==null){
                         this@MainActivity.runOnUiThread {
                             DialogUtils.dismissDialog(progressDialog)
@@ -405,7 +453,7 @@ class MainActivity : AppCompatActivity() {
                         this@MainActivity.runOnUiThread {
                             DialogUtils.dismissDialog(progressDialog)
                             showResults(result.biographic.birthDate,result.biographic.expirationDate,docNumber,frontImage,backImage,faceImage,signImage,resultString,cardType)
-                            AppInstance.instance.getController()!!.deleteInstance(instanceID,object : DeleteListener{
+                            AppInstance.instance.getController()!!.deleteInstance(instanceID,DeleteType.ID, object : DeleteListener{
                                 override fun instanceDeleted(success: Boolean) {
                                      if(!success){
                                          // Handle error

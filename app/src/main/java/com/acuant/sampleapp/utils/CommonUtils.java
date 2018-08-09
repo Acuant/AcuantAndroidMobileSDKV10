@@ -27,7 +27,7 @@ public class CommonUtils {
                             && !field.getName().startsWith("kAuth")
                     && (String.class.isAssignableFrom(field.getType()))) {
                         field.setAccessible(true);
-                        if (field.get(result) != null) {
+                        if (field.get(result) != null && field.get(result).toString().trim().length()>0) {
                             str = str + field.getName() + ":" + field.get(result) + System.lineSeparator();
                         }
                     }
