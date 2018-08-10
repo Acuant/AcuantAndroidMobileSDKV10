@@ -61,6 +61,7 @@ public final class DocumentCaptureActivity extends AppCompatActivity implements 
     private DocumentCameraSourcePreview mPreview;
     private DocumentGraphicOverlay<DocumentGraphic> documentGraphicOverlay;
     private boolean tapped = false;
+    private int waitTime  = 2;
     DocumentDetector documentDetector = null;
 
     private TextView instructionView = null;
@@ -72,6 +73,7 @@ public final class DocumentCaptureActivity extends AppCompatActivity implements 
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         tapped = false;
+        waitTime = getIntent().getIntExtra("WAIT",2);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -132,7 +134,7 @@ public final class DocumentCaptureActivity extends AppCompatActivity implements 
                 }
                 tapped = true;
                 instructionView.setText("HOLD STEADY");
-                documentDetector.startDetectingPdf417(2);
+                documentDetector.startDetectingPdf417(waitTime);
                 if (documentGraphicOverlay != null) {
                     documentGraphicOverlay.setVisibility(View.VISIBLE);
                 }

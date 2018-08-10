@@ -79,7 +79,6 @@ class FacialLivelinessActivity : AppCompatActivity(), LiveFaceListener {
                     RC_HANDLE_CAMERA_PERM)
         }
 
-
     }
 
     /**

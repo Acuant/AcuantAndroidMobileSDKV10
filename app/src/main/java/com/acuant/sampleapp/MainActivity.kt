@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     private var capturingSelfieImage : Boolean = false
     private var capturingFacialMatch : Boolean = false
     private var facialResultString : String? = null
+    private var captureWaitTime  : Int = 0
 
     fun cleanUpTransaction(){
         capturedFrontImage = null
@@ -72,8 +73,8 @@ class MainActivity : AppCompatActivity() {
         endPoints!!.idEndpoint = "https://services.assureid.net"
 
         credential = Credential()
-        credential!!.username = "xxxxxx@xxxxx.com"
-        credential!!.password = "xxxxxxxx"
+        credential!!.username = "xxxxxxx@xxxxxx.com"
+        credential!!.password = "xxxxxxxxxxx"
         credential!!.subscription = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         credential!!.endpoints = endPoints
 
@@ -153,6 +154,7 @@ class MainActivity : AppCompatActivity() {
                         alert.setMessage("Scan back side of health insurance card.")
                         alert.setPositiveButton("OK") { dialog, whichButton ->
                             dialog.dismiss()
+                            captureWaitTime = 0
                             showDocumentCaptureCamera()
                         }
                         alert.setNegativeButton("CANCEL") { dialog, whichButton ->
@@ -165,7 +167,9 @@ class MainActivity : AppCompatActivity() {
                         alert.setMessage("Scan back side of driving license card.")
                         alert.setPositiveButton("OK") { dialog, whichButton ->
                             dialog.dismiss()
+                            captureWaitTime = 2
                             showDocumentCaptureCamera()
+
                         }
                         alert.setNegativeButton("CANCEL") { dialog, whichButton ->
                             dialog.dismiss()
@@ -250,6 +254,7 @@ class MainActivity : AppCompatActivity() {
     fun idPassPortClicked(view: View) {
         frontCaptured = false
         cleanUpTransaction()
+        captureWaitTime = 0
         showDocumentCaptureCamera()
     }
 
@@ -258,6 +263,7 @@ class MainActivity : AppCompatActivity() {
         frontCaptured = false
         cleanUpTransaction()
         isHealthCard = true
+        captureWaitTime = 0
         showDocumentCaptureCamera()
     }
 
@@ -268,6 +274,7 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity,
                 DocumentCaptureActivity::class.java
         )
+        cameraIntent.putExtra("WAIT",captureWaitTime)
         startActivityForResult(cameraIntent, Constants.REQUEST_CAMERA_PHOTO)
     }
 
