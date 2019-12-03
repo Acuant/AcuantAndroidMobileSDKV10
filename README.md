@@ -39,7 +39,7 @@ information regarding such designations and their registration status.
 
 # Introduction
 
-<p>THIS SDK HAS BEEN DEPRECATED
+<p>**THIS SDK HAS BEEN DEPRECATED**
 
 Acuant Web Services supports data extraction from driver’s licenses, state IDs, other government issued IDs, custom IDs, driver’s licenses, barcodes, and passports. It also supports document authentication and facial recognition to verify and authenticate the identity.</p>
 
