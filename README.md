@@ -36,6 +36,9 @@ information regarding such designations and their registration status.
 <p>Los Angeles, CA 90045</p>
 <p>==================</p>
 
+## License
+
+This software is subject to Acuant's end user license agreement (EULA), which can be found [here](EULA.pdf).
 
 # Introduction
 
